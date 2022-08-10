@@ -10,9 +10,9 @@ import {
 } from 'native-base'
 
 export const Article: FC = (props: any) => {
-  console.log(props)
   const { route } = props
   const { params } = route
+
   return (
     <Box alignItems="center">
       <Box maxW="80" rounded="lg" overflow="hidden" borderColor="coolGray.200" borderWidth="1" _dark={{

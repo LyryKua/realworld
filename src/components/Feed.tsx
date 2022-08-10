@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { Avatar, Box, HStack, Pressable, ScrollView, Spacer, Text, VStack, Divider } from 'native-base'
-import React, { FC, useEffect, useState } from 'react'
-import { Article, ArticlesService } from '../services/ArticlesService'
+import React, { FC } from 'react'
+import { useRecoilValue } from 'recoil'
 import { FeedStackParam } from './App'
+import { articlesState } from '../state/selectors/articles'
+import { withSuspense } from './hoc/withSuspense'
 
 type ArticleItemProps = {
   title: string
@@ -84,22 +86,9 @@ const ArticleItem: FC<ArticleItemProps> = props => {
   )
 }
 
-export const Feed: FC = () => {
-  const [articles, setArticles] = useState<Article[]>([])
-  const articlesService = new ArticlesService()
+const FeedCmp: FC = () => {
+  const { articles } = useRecoilValue(articlesState)
 
-  const loadArticles = async () => {
-    const loadedArticles = await articlesService.listArticles()
-    setArticles(loadedArticles.articles)
-  }
-
-  useEffect(() => {
-    loadArticles()
-  })
-
-  if (articles.length === 0) {
-    return <Text>Loading...</Text>
-  }
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {
@@ -119,3 +108,5 @@ export const Feed: FC = () => {
     </ScrollView>
   )
 }
+
+export const Feed = withSuspense(FeedCmp)
