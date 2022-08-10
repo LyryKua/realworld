@@ -1,4 +1,6 @@
-import { Avatar, Box, HStack, Pressable, ScrollView, Spacer, Text, VStack } from 'native-base'
+import { useNavigation } from '@react-navigation/native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { Avatar, Box, HStack, Pressable, ScrollView, Spacer, Text, VStack, Divider } from 'native-base'
 import React, { FC } from 'react'
 
 type ArticleItemProps = {
@@ -10,10 +12,12 @@ type ArticleItemProps = {
 
 const ArticleItem: FC<ArticleItemProps> = props => {
   const { authorImg, author, title, date } = props
+  const navigation = useNavigation<StackNavigationProp<any>>()
+  const handleClick = () => navigation.push('Article')
 
   return (
     <Box>
-      <Pressable onPress={() => console.log('You touched me')} _dark={{
+      <Pressable onPress={handleClick} _dark={{
         bg: 'coolGray.800',
       }} _light={{
         bg: 'white',
@@ -55,7 +59,12 @@ const factory = (time: number) => Array(time).fill(undefined).map((it, index) =>
 export const Feed: FC = () => (
   <ScrollView showsVerticalScrollIndicator={false}>
     {
-      factory(12).map((it, index) => <ArticleItem {...it} key={index} />)
+      factory(12).map((it, index) => (
+        <Box key={index}>
+          <ArticleItem {...it} />
+          <Divider />
+        </Box>
+      ))
     }
   </ScrollView>
 )
