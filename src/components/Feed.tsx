@@ -1,19 +1,39 @@
 import { useNavigation } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { Avatar, Box, HStack, Pressable, ScrollView, Spacer, Text, VStack, Divider } from 'native-base'
-import React, { FC } from 'react'
+import React, { FC, useEffect, useState } from 'react'
+import { Article, ArticlesService } from '../services/ArticlesService'
+import { FeedStackParam } from './App'
 
 type ArticleItemProps = {
-  authorImg: string
-  author: string
   title: string
-  date: Date
+  tagList: string[]
+  favoritesCount: number
+  username: string
+  image: string
+  updatedAt: Date
 }
 
 const ArticleItem: FC<ArticleItemProps> = props => {
-  const { authorImg, author, title, date } = props
-  const navigation = useNavigation<StackNavigationProp<any>>()
-  const handleClick = () => navigation.push('Article')
+  const { title, updatedAt, image, username, tagList } = props
+  const navigation = useNavigation<StackNavigationProp<FeedStackParam>>()
+  const handleClick = () => navigation.push('Article', {
+    slug: 'string',
+    title,
+    description: 'string',
+    body: 'string',
+    tagList,
+    favorited: true,
+    favoritesCount: 42,
+    author: {
+      username,
+      bio: null,
+      image,
+      following: true,
+    },
+    createdAt: new Date(),
+    updatedAt,
+  })
 
   return (
     <Box>
@@ -24,7 +44,7 @@ const ArticleItem: FC<ArticleItemProps> = props => {
       }}>
         <Box pl="4" pr="5" py="2">
           <HStack alignItems="center" space={3}>
-            <Avatar size="48px" source={{ uri: authorImg }} />
+            <Avatar size="48px" source={{ uri: image }} />
             <VStack>
               <Text color="coolGray.800" _dark={{
                 color: 'warmGray.50',
@@ -34,37 +54,68 @@ const ArticleItem: FC<ArticleItemProps> = props => {
               <Text color="coolGray.600" _dark={{
                 color: 'warmGray.200',
               }}>
-                {author}
+                {username}
               </Text>
+              {tagList.map(tag => (
+                <Text px={1} key={tag} color="green.700" _dark={{
+                  color: 'warmGray.200',
+                }}>
+                  {tag}
+                </Text>
+              ))}
             </VStack>
             <Spacer />
-            <Text fontSize="xs" color="coolGray.800" _dark={{
-              color: 'warmGray.50',
-            }} alignSelf="flex-start">
-              {date.toDateString()}
-            </Text>
+            <VStack>
+              <Text fontSize="xs" color="coolGray.800" _dark={{
+                color: 'warmGray.50',
+              }} alignSelf="flex-start">
+                {updatedAt}
+              </Text>
+              <Text fontSize="xs" color="coolGray.800" _dark={{
+                color: 'warmGray.50',
+              }} alignSelf="flex-start">
+                {updatedAt}
+              </Text>
+            </VStack>
           </HStack>
         </Box>
       </Pressable>
     </Box>
   )
 }
-const factory = (time: number) => Array(time).fill(undefined).map((it, index) => ({
-  author: ['Arm Ukraine', 'Brave Ukrainian', 'Putin Huilo'][index % 3],
-  authorImg: 'https://picsum.photos/200/300',
-  date: new Date(),
-  title: ['Russia invaded  Ukraine', 'Support Ukraine', 'Glory to Ukraine', 'Russia is a terrorist state'][index % 4],
-}))
 
-export const Feed: FC = () => (
-  <ScrollView showsVerticalScrollIndicator={false}>
-    {
-      factory(12).map((it, index) => (
-        <Box key={index}>
-          <ArticleItem {...it} />
-          <Divider />
-        </Box>
-      ))
-    }
-  </ScrollView>
-)
+export const Feed: FC = () => {
+  const [articles, setArticles] = useState<Article[]>([])
+  const articlesService = new ArticlesService()
+
+  const loadArticles = async () => {
+    const loadedArticles = await articlesService.listArticles()
+    setArticles(loadedArticles.articles)
+  }
+
+  useEffect(() => {
+    loadArticles()
+  })
+
+  if (articles.length === 0) {
+    return <Text>Loading...</Text>
+  }
+  return (
+    <ScrollView showsVerticalScrollIndicator={false}>
+      {
+        articles.map((it, index) => (
+          <Box key={index}>
+            <ArticleItem
+              tagList={it.tagList}
+              title={it.title}
+              updatedAt={it.updatedAt}
+              image={it.author.image}
+              username={it.author.username} favoritesCount={it.favoritesCount}
+            />
+            <Divider />
+          </Box>
+        ))
+      }
+    </ScrollView>
+  )
+}

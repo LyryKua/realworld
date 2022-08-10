@@ -4,15 +4,21 @@ import { Feed } from './Feed'
 import { Article } from './Article'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import { Article as ArticleType } from '../services/ArticlesService'
 
-const StackNavigator = createStackNavigator()
+export type FeedStackParam = {
+  Feed: undefined
+  Article: ArticleType
+}
+
+const FeedStack = createStackNavigator<FeedStackParam>()
 export const App: FC = () => (
   <NativeBaseProvider>
     <NavigationContainer>
-      <StackNavigator.Navigator>
-        <StackNavigator.Screen name="Feed" component={Feed}/>
-        <StackNavigator.Screen name="Article" component={Article}/>
-      </StackNavigator.Navigator>
+      <FeedStack.Navigator>
+        <FeedStack.Screen name="Feed" component={Feed}/>
+        <FeedStack.Screen name="Article" component={Article}/>
+      </FeedStack.Navigator>
     </NavigationContainer>
   </NativeBaseProvider>
 )

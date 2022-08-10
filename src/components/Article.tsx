@@ -9,7 +9,10 @@ import {
   Stack,
 } from 'native-base'
 
-export const Article: FC = () => {
+export const Article: FC = (props: any) => {
+  console.log(props)
+  const { route } = props
+  const { params } = route
   return (
     <Box alignItems="center">
       <Box maxW="80" rounded="lg" overflow="hidden" borderColor="coolGray.200" borderWidth="1" _dark={{
@@ -24,14 +27,14 @@ export const Article: FC = () => {
         <Box>
           <AspectRatio w="100%" ratio={16 / 9}>
             <Image source={{
-              uri: 'https://img.pravda.com/images/doc/c/a/ca467ef-photo-2022-07-14-13-49-48.jpg',
+              uri: params.author.image,
             }} alt="image" />
           </AspectRatio>
         </Box>
         <Stack p="4" space={3}>
           <Stack space={2}>
             <Heading size="md" ml="-1">
-              Russia is a terrorist state
+              {params.title}
             </Heading>
             <Text fontSize="xs" _light={{
               color: 'violet.500',
@@ -42,19 +45,17 @@ export const Article: FC = () => {
             </Text>
           </Stack>
           <Text fontWeight="400">
-            21 people died, about 50 are seriously wounded.
+            {params.description}
           </Text>
           <Text fontWeight="400">
-            As a result of the Russian attack on the centre of Vinnytsia on Thursday, 21 people are currently known to
-            have died, about 90 people have sought help from medical institutions, about fifty of them are in critical
-            condition.
+            {params.body}
           </Text>
           <HStack alignItems="center" space={4} justifyContent="space-between">
             <HStack alignItems="center">
               <Text color="coolGray.600" _dark={{
                 color: 'warmGray.200',
               }} fontWeight="400">
-                14 JULY 2022
+                {params.updatedAt}
               </Text>
             </HStack>
           </HStack>
