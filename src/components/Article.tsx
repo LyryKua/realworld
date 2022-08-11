@@ -1,3 +1,4 @@
+import { StackScreenProps } from '@react-navigation/stack'
 import React, { FC } from 'react'
 import {
   HStack,
@@ -8,8 +9,11 @@ import {
   AspectRatio,
   Stack,
 } from 'native-base'
+import { FeedStackParam } from './FeedStack'
 
-export const Article: FC = (props: any) => {
+type ArticleProps = StackScreenProps<FeedStackParam, 'Article'>
+
+export const Article: FC<ArticleProps> = props  => {
   const { route } = props
   const { params } = route
 

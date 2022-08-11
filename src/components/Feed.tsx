@@ -1,13 +1,14 @@
 import { useNavigation } from '@react-navigation/native'
-import { StackNavigationProp } from '@react-navigation/stack'
+import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack'
 import { Avatar, Box, HStack, Pressable, ScrollView, Spacer, Text, VStack, Divider } from 'native-base'
 import React, { FC } from 'react'
 import { useRecoilValue } from 'recoil'
-import { FeedStackParam } from './App'
-import { articlesState } from '../state/selectors/articles'
+import { FeedStackParam } from './FeedStack'
+import { articlesMapSelector, articlesSelector } from '../state'
 import { withSuspense } from './hoc/withSuspense'
 
 type ArticleItemProps = {
+  slug: string
   title: string
   tagList: string[]
   favoritesCount: number
@@ -17,25 +18,12 @@ type ArticleItemProps = {
 }
 
 const ArticleItem: FC<ArticleItemProps> = props => {
-  const { title, updatedAt, image, username, tagList } = props
+  const {slug, title, updatedAt, image, username, tagList, favoritesCount } = props
+  const articlesMap = useRecoilValue(articlesMapSelector)
   const navigation = useNavigation<StackNavigationProp<FeedStackParam>>()
-  const handleClick = () => navigation.push('Article', {
-    slug: 'string',
-    title,
-    description: 'string',
-    body: 'string',
-    tagList,
-    favorited: true,
-    favoritesCount: 42,
-    author: {
-      username,
-      bio: null,
-      image,
-      following: true,
-    },
-    createdAt: new Date(),
-    updatedAt,
-  })
+  const handleClick = () => {
+    navigation.push('Article', articlesMap[slug])
+  }
 
   return (
     <Box>
@@ -76,7 +64,7 @@ const ArticleItem: FC<ArticleItemProps> = props => {
               <Text fontSize="xs" color="coolGray.800" _dark={{
                 color: 'warmGray.50',
               }} alignSelf="flex-start">
-                {updatedAt}
+                {`<3: ${favoritesCount}`}
               </Text>
             </VStack>
           </HStack>
@@ -86,20 +74,24 @@ const ArticleItem: FC<ArticleItemProps> = props => {
   )
 }
 
-const FeedCmp: FC = () => {
-  const { articles } = useRecoilValue(articlesState)
+type FeedProps = StackScreenProps<FeedStackParam, 'Feed'>
+
+const FeedCmp: FC<FeedProps> = () => {
+  const articles = useRecoilValue(articlesSelector)
 
   return (
     <ScrollView showsVerticalScrollIndicator={false}>
       {
-        articles.map((it, index) => (
-          <Box key={index}>
+        articles.map(it => (
+          <Box key={it.slug}>
             <ArticleItem
+              slug={it.slug}
               tagList={it.tagList}
               title={it.title}
               updatedAt={it.updatedAt}
               image={it.author.image}
-              username={it.author.username} favoritesCount={it.favoritesCount}
+              username={it.author.username}
+              favoritesCount={it.favoritesCount}
             />
             <Divider />
           </Box>

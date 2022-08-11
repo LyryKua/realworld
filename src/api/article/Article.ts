@@ -1,4 +1,4 @@
-export type Article = {
+export type ApiArticle = {
   slug: string
   title: string
   description: string
@@ -19,4 +19,19 @@ export type Article = {
 export type ListArticles = {
   articles: Article[]
   articlesCount: number
+}
+
+export type Article = {
+  slug: string
+  title: string
+  tagList: string[]
+  favoritesCount: number
+  description: string
+  body: string
+  author: {
+    username: string
+    image: string
+  }
+  createdAt: Date
+  updatedAt: Date
 }

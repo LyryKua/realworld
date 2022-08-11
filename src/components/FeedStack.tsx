@@ -1,8 +1,13 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { FC } from 'react'
-import { FeedStackParam } from './App'
+import { Article as ArticleType } from '../api/article/Article'
 import { Article } from './Article'
 import { Feed } from './Feed'
+
+export type FeedStackParam = {
+  Feed: undefined
+  Article: ArticleType
+}
 
 const FeedStackProvider = createStackNavigator<FeedStackParam>()
 
